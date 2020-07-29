@@ -18,66 +18,63 @@ export const MessagesUnseen = functions.firestore
       createdAt,
     } = after;
 
-    db.collection("MessagesUnseen")
+    db.collection("messagesUnseen")
       .doc(context.params.schoolId)
-      .collection("responsaveis")
-      .doc(context.params.responsavelId)
       .collection("alunos")
       .doc(context.params.alunoId)
-      .collection("messages")
+      .collection("unseen")
+      .doc("Unseen")
       .get()
-      .then((docs) =>
-        docs.docs.map((doc) => {
-          if (!doc.exists) {
+      .then((doc): any => {
+        if (!doc.exists) {
+          return db
+            .collection("messagesUnseen")
+            .doc(context.params.schoolId)
+            .collection("alunos")
+            .doc(context.params.alunoId)
+            .collection("unseen")
+            .doc("Unseen")
+            .set({
+              createdAt: createdAt,
+              senderId: senderId,
+              count: 1,
+            });
+        } else {
+          if (senderId === doc.get("senderId")) {
             return db
-              .collection("MessagesUnseen")
+              .collection("messagesUnseen")
               .doc(context.params.schoolId)
-              .collection("responsaveis")
-              .doc(context.params.responsavelId)
               .collection("alunos")
               .doc(context.params.alunoId)
-              .collection("messages")
-              .doc()
-              .set({
-                createdAt: createdAt,
-                senderId: senderId,
-                count: 1,
-              });
-          } else {
-            if (senderId === doc.data().senderId) {
-              return db
-                .collection("MessagesUnseen")
-                .doc(context.params.schoolId)
-                .collection("responsaveis")
-                .doc(context.params.responsavelId)
-                .collection("alunos")
-                .doc(context.params.alunoId)
-                .collection("messages")
-                .doc()
-                .set({
-                  timeStamp: createdAt,
+              .collection("unseen")
+              .doc("Unseen")
+              .set(
+                {
+                  createdAt: createdAt,
                   senderId: senderId,
-                  count: doc.data().count++,
-                });
-            } else {
-              return db
-                .collection("MessagesUnseen")
-                .doc(context.params.schoolId)
-                .collection("responsaveis")
-                .doc(context.params.responsavelId)
-                .collection("alunos")
-                .doc(context.params.alunoId)
-                .collection("messages")
-                .doc()
-                .set({
+                  count: doc.get("count") + 1,
+                },
+                { merge: true }
+              );
+          } else {
+            return db
+              .collection("messagesUnseen")
+              .doc(context.params.schoolId)
+              .collection("alunos")
+              .doc(context.params.alunoId)
+              .collection("unseen")
+              .doc("Unseen")
+              .set(
+                {
                   createdAt: createdAt,
                   senderId: senderId,
                   count: 1,
-                });
-            }
+                },
+                { merge: true }
+              );
           }
-        })
-      )
+        }
+      })
       .catch((err) => {
         throw err;
       });
