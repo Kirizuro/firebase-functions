@@ -22,8 +22,6 @@ export const MessagesUnseen = functions.firestore
       .doc(context.params.schoolId)
       .collection("alunos")
       .doc(context.params.alunoId)
-      .collection("unseen")
-      .doc("Unseen")
       .get()
       .then((doc): any => {
         if (!doc.exists) {
@@ -32,27 +30,27 @@ export const MessagesUnseen = functions.firestore
             .doc(context.params.schoolId)
             .collection("alunos")
             .doc(context.params.alunoId)
-            .collection("unseen")
-            .doc("Unseen")
             .set({
-              createdAt: createdAt,
-              senderId: senderId,
-              count: 1,
+              unseen: {
+                createdAt: createdAt,
+                senderId: senderId,
+                count: 1,
+              },
             });
         } else {
-          if (senderId === doc.get("senderId")) {
+          if (senderId === doc.get("unseen.senderId")) {
             return db
               .collection("messagesUnseen")
               .doc(context.params.schoolId)
               .collection("alunos")
               .doc(context.params.alunoId)
-              .collection("unseen")
-              .doc("Unseen")
               .set(
                 {
-                  createdAt: createdAt,
-                  senderId: senderId,
-                  count: doc.get("count") + 1,
+                  unseen: {
+                    createdAt: createdAt,
+                    senderId: senderId,
+                    count: doc.get("unseen.count") + 1,
+                  },
                 },
                 { merge: true }
               );
@@ -62,13 +60,13 @@ export const MessagesUnseen = functions.firestore
               .doc(context.params.schoolId)
               .collection("alunos")
               .doc(context.params.alunoId)
-              .collection("unseen")
-              .doc("Unseen")
               .set(
                 {
-                  createdAt: createdAt,
-                  senderId: senderId,
-                  count: 1,
+                  unseen: {
+                    createdAt: createdAt,
+                    senderId: senderId,
+                    count: 1,
+                  },
                 },
                 { merge: true }
               );
