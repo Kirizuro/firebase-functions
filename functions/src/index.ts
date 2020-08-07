@@ -31,14 +31,13 @@ export const MessagesUnseen = functions.firestore
             .collection("alunos")
             .doc(context.params.alunoId)
             .set({
-              unseen: {
-                createdAt: createdAt,
-                senderId: senderId,
-                count: 1,
-              },
+              createdAt: createdAt,
+              senderId: senderId,
+              count: 1,
+              userId: context.params.alunoId,
             });
         } else {
-          if (senderId === doc.get("unseen.senderId")) {
+          if (senderId === doc.get("senderId")) {
             return db
               .collection("messagesUnseen")
               .doc(context.params.schoolId)
@@ -46,11 +45,10 @@ export const MessagesUnseen = functions.firestore
               .doc(context.params.alunoId)
               .set(
                 {
-                  unseen: {
-                    createdAt: createdAt,
-                    senderId: senderId,
-                    count: doc.get("unseen.count") + 1,
-                  },
+                  createdAt: createdAt,
+                  senderId: senderId,
+                  count: doc.get("count") + 1,
+                  userId: context.params.alunoId,
                 },
                 { merge: true }
               );
@@ -62,11 +60,10 @@ export const MessagesUnseen = functions.firestore
               .doc(context.params.alunoId)
               .set(
                 {
-                  unseen: {
-                    createdAt: createdAt,
-                    senderId: senderId,
-                    count: 1,
-                  },
+                  createdAt: createdAt,
+                  senderId: senderId,
+                  count: 1,
+                  userId: context.params.alunoId,
                 },
                 { merge: true }
               );
