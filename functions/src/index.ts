@@ -35,6 +35,7 @@ export const MessagesUnseen = functions.firestore
               senderId: senderId,
               count: 1,
               userId: context.params.alunoId,
+              seen: false,
             });
         } else {
           if (senderId === doc.get("senderId")) {
@@ -49,6 +50,7 @@ export const MessagesUnseen = functions.firestore
                   senderId: senderId,
                   count: doc.get("count") + 1,
                   userId: context.params.alunoId,
+                  seen: false,
                 },
                 { merge: true }
               );
@@ -64,6 +66,7 @@ export const MessagesUnseen = functions.firestore
                   senderId: senderId,
                   count: 1,
                   userId: context.params.alunoId,
+                  seen: false,
                 },
                 { merge: true }
               );
